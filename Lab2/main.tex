@@ -83,13 +83,20 @@ AY: 2026--27\\
 
 \section*{1. Objective}
 
-The objective of this experiment is to understand the working principle of a Multi-Layer Perceptron (MLP) and implement one using TensorFlow/Keras for multi-class image classification. The Fashion-MNIST dataset is used to train and evaluate the network. The experiment also aims to study the process of image preprocessing (flattening, normalization and one-hot encoding), analyse the learning behaviour of the network through training and validation curves, evaluate the classifier using standard performance metrics such as Accuracy, Precision, Recall and F1-score, and subsequently perform automated hyperparameter optimization using Randomized Search in order to obtain an improved model configuration.
-
+The objective of this experiment is twofold. First, to understand the working principle of a Multi-Layer Perceptron (MLP) and implement one using TensorFlow/Keras for multi-class image classification, using the Fashion-MNIST dataset to train and evaluate the network, studying the process of image preprocessing (flattening, normalization and one-hot encoding), analysing the learning behaviour of the network through training and validation curves, evaluating the classifier using standard performance metrics such as Accuracy, Precision, Recall and F1-score, and subsequently performing automated hyperparameter optimization using Randomized Search in order to obtain an improved model configuration. Second, to implement the Perceptron Learning Algorithm from scratch in Python and apply it to the XOR gate, recording the weights and bias after every individual weight update, visualizing the decision boundary at every stage of training, and analysing and identifying the pattern that prevents the Single Layer Perceptron from converging on this problem.
 \section*{2. Background Theory}
 
 A Multi-Layer Perceptron is a class of feedforward Artificial Neural Network consisting of an input layer, one or more hidden layers and an output layer. Unlike the Single Layer Perceptron studied in Experiment 1, which can only solve linearly separable problems, the Multi-Layer Perceptron introduces hidden layers together with non-linear activation functions, enabling the network to approximate complex, non-linear decision boundaries. Each neuron in a given layer is fully connected to every neuron in the preceding layer, and information flows strictly in the forward direction during inference.
 
 Training an MLP involves two major phases. During the forward pass, the input signal is propagated through the network, layer by layer, until the output layer produces a probability distribution over the target classes. During the backward pass, the error between the predicted output and the actual label is computed using a loss function, and this error is propagated backwards through the network using the backpropagation algorithm. The gradients obtained through backpropagation are then used by an optimizer to update the weights and biases of every layer so as to progressively reduce the loss.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+The XOR (Exclusive OR) function is the classical counter-example used to demonstrate the fundamental limitation of the Single Layer Perceptron. Unlike OR, AND and NOT, the XOR function is \textbf{not linearly separable}: there is no single straight line in the two-dimensional input space that can correctly separate the positive class $\{(0,1),(1,0)\}$ from the negative class $\{(0,0),(1,1)\}$, since these two classes lie on opposite diagonals of the unit square. Because a Single Layer Perceptron can only ever represent one straight-line decision boundary, the Perceptron Convergence Theorem -- which guarantees convergence in finite time -- does not apply to XOR, and the algorithm is expected to update its weights indefinitely without ever reaching a stable, zero-error configuration.
+
 
 \subsection*{Mathematical Formulation}
 
@@ -156,6 +163,26 @@ The recommended baseline architecture used in this experiment is
 784 $\rightarrow$ Dense(128, ReLU) $\rightarrow$ Dense(64, ReLU) $\rightarrow$ Dense(10, Softmax)
 \end{center}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+As in the previous experiment, the perceptron computes
+
+\[
+z=\mathbf{w}^{T}\mathbf{x}+b, \qquad \hat{y}=f(z)
+\]
+
+and updates its parameters whenever $\hat{y}\neq y$ according to
+
+\[
+\mathbf{w}_{new}=\mathbf{w}_{old}+\eta(y-\hat{y})\mathbf{x}, \qquad b_{new}=b_{old}+\eta(y-\hat{y})
+\]
+
+where $\eta = 0.1$ in this experiment, and the weights and bias were both initialized to zero.
+
+
 \subsection*{Activation Functions}
 
 An activation function introduces non-linearity into the network, allowing an MLP to learn complex mapping functions that a purely linear model cannot represent. In this experiment, several activation functions are used across the baseline model, the hyperparameter search space and the final optimized model.
@@ -200,6 +227,22 @@ Softmax & $(0,1)$ & Output Layer -- Multi-class Classification\\
 
 Although ReLU, Tanh and Sigmoid were all included as candidate activation functions in the hyperparameter search space, the automated search identified Tanh as the activation function that produced the best cross-validated performance for the hidden layers, and it was consequently used in the optimized model.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\subsection*{Activation Function (Experiment 4 -- XOR Gate)}
+
+The Step Activation Function was used, consistent with the classical Rosenblatt Perceptron formulation.
+
+\[
+f(z)=
+\begin{cases}
+1,&z\ge0\\
+0,&z<0
+\end{cases}
+\]
 \section*{3. Dataset Description}
 
 The experiment uses the \textbf{Fashion-MNIST Dataset}, a widely used benchmark dataset in the deep learning community, consisting of grayscale images of clothing articles. It is intended as a drop-in, more challenging replacement for the original MNIST handwritten digit dataset.
@@ -235,7 +278,7 @@ Problem Type & Multi-class Classification\\
 \end{center}
 
 \vspace{0.15cm}
-
+\newpage
 \textbf{Target Classes}
 
 \begin{center}
@@ -270,6 +313,34 @@ Problem Type & Multi-class Classification\\
 
 The dataset contains no missing values and each of the ten classes is represented by exactly 6{,}000 training images, resulting in a perfectly balanced class distribution. This balance ensures that the trained network is not biased towards any particular category during learning. Each image, originally provided as a $28\times28$ pixel matrix, must be transformed into a flat 784-dimensional feature vector prior to being supplied to the fully connected (Dense) layers of the MLP.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+The "dataset" for this experiment is the complete truth table of the XOR gate.
+
+\vspace{0.2cm}
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{x1} & \textbf{x2} & \textbf{XOR Output}\\
+\hline
+0 & 0 & 0\\
+\hline
+0 & 1 & 1\\
+\hline
+1 & 0 & 1\\
+\hline
+1 & 1 & 0\\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.2cm}
+
+Unlike the OR and AND gates, the positive class $(0,1)$ and $(1,0)$ and the negative class $(0,0)$ and $(1,1)$ occupy opposite diagonal corners of the input square, making this dataset non-linearly separable.
 \section*{4. Image Preprocessing}
 
 Since Dense layers of an MLP require a one-dimensional feature vector rather than a two-dimensional image matrix, every $28\times28$ image is flattened into a vector of length 784
@@ -298,10 +369,10 @@ The following preprocessing steps were carried out prior to model construction.
 \item Normalized pixel intensities from the range $[0,255]$ to $[0,1]$ by dividing by 255.
 \item Converted the integer class labels into one-hot encoded vectors of length 10 using \texttt{to\_categorical}.
 \end{enumerate}
-
 \section*{5. Experimental Procedure}
 
 The experiment was carried out using Python with TensorFlow/Keras in Google Colab. The implementation followed a systematic workflow beginning from dataset loading and ending with automated hyperparameter optimization and final model comparison.
+
 
 \subsection*{Task 1: Dataset Exploration}
 
@@ -323,6 +394,7 @@ The Fashion-MNIST dataset was loaded directly using \texttt{tensorflow.keras.dat
 
 The dataset exploration confirmed that the images were correctly loaded and that no missing or corrupted samples were present.
 
+
 \subsection*{Task 2: Data Preprocessing}
 
 The images were flattened, normalized and one-hot encoded as described in Section 5.
@@ -340,6 +412,7 @@ The images were flattened, normalized and one-hot encoded as described in Sectio
 
 The comparison of tensor shapes before and after preprocessing confirmed that every image was correctly transformed from a $28\times28$ matrix into a flat, normalized 784-dimensional vector, and that every integer label was correctly converted into a 10-dimensional one-hot vector.
 
+
 \subsection*{Task 3: Model Construction}
 
 A baseline Multi-Layer Perceptron was constructed using the Keras Sequential API with the following architecture.
@@ -353,6 +426,7 @@ A baseline Multi-Layer Perceptron was constructed using the Keras Sequential API
 
 The model was compiled using the Adam optimizer, the Categorical Cross-Entropy loss function and Accuracy as the evaluation metric. The \texttt{model.summary()} output confirmed a total of 109{,}386 trainable parameters distributed across the three Dense layers, as reported in Section 8.
 
+
 \subsection*{Task 4: Model Training}
 
 The baseline model was compiled using
@@ -364,6 +438,7 @@ The baseline model was compiled using
 \end{itemize}
 
 and trained for 20 epochs with a batch size of 32, using 20\% of the training data reserved as a validation split. Training and validation accuracy and loss were recorded after every epoch in order to monitor learning progress and detect signs of overfitting.
+
 
 \subsection*{Task 5: Model Evaluation}
 
@@ -378,15 +453,45 @@ After training, the baseline model was evaluated on the untouched testing set of
 \item Classification Report (per-class precision, recall and F1-score)
 \end{itemize}
 
+
 \subsection*{Task 6: Hyperparameter Optimization and Model Comparison}
 
 Rather than manually selecting the network hyperparameters, an automated Randomized Search was performed using the SciKeras wrapper together with Scikit-learn's \texttt{RandomizedSearchCV}, employing 5-fold cross-validation over a wide search space covering the number of hidden layers, the number of neurons per layer, the learning rate, the batch size, the number of epochs, the optimizer, the activation function and the dropout rate. The best configuration identified by the search was then used to construct and train an optimized MLP, which was evaluated on the testing set and compared against the baseline model.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+The experiment was carried out using Python in Google Colab.
+
+
+\subsection*{Task 7: Truth Table Definition}
+
+The complete truth table of the XOR gate was defined as a NumPy array, to be used as the training data for the perceptron.
+
+
+\subsection*{Task 8: Perceptron Training with Fixed Epoch Budget}
+
+Since XOR is not linearly separable, the perceptron cannot naturally converge; a fixed maximum of 10 training epochs was therefore used, with the same online, sample-by-sample update rule and learning rate ($\eta = 0.1$) as in the previous experiment. Weights and bias were initialized to zero.
+
+
+\subsection*{Task 9: Weight Update Logging}
+
+Every time a sample was misclassified, the weights and bias were updated immediately and the updated values were printed to the console, exactly as in the previous experiment.
+
+
+\subsection*{Task 10: Decision Boundary Visualization}
+
+Immediately after every weight update, the corresponding decision boundary line $w_1x_1+w_2x_2+b=0$ was recorded and plotted. All recorded boundaries across the full 10 training epochs were combined into a single figure using Matplotlib subplots.
+
+
+\subsection*{Task 11: Non-Convergence Pattern Analysis}
+
+After training, the complete sequence of recorded $(\mathbf{w},b)$ states was scanned programmatically to check whether any state recurred later in training. A recurring state would confirm that the perceptron has entered a repeating cycle rather than converging.
 \section*{6. Source Code}
 
-The complete implementation was carried out in Python using Google Colab and TensorFlow/Keras, following the task-wise structure described in Section 5 (dataset loading, preprocessing, baseline model construction and training, baseline evaluation, automated hyperparameter optimization using RandomizedSearchCV, optimized model construction and training, and final evaluation).
-
-Owing to its length, the complete, executable source code has not been reproduced in full within this report. The complete Google Colab notebook, containing every code cell together with its executed output, is publicly available at the following repository link.
+The complete implementation was carried out in Python using Google Colab and TensorFlow/Keras, following the task-wise structure described in Section 5 (dataset loading, preprocessing, baseline model construction and training, baseline evaluation, automated hyperparameter optimization using RandomizedSearchCV, optimized model construction and training, and final evaluation).Owing to its length, the complete, executable source code has not been reproduced in full within this report. The complete Google Colab notebook, containing every code cell together with its executed output, is publicly available at the following repository link.
 
 \begin{center}
 \url{https://github.com/K-Mithran/Deep-Learning/blob/main/Lab2/DL_2.ipynb}
@@ -404,8 +509,6 @@ The major stages of implementation included
 \item Constructing and training the optimized MLP using the best hyperparameters.
 \item Evaluating the optimized model and comparing it against the baseline.
 \end{enumerate}
-
-
 \section*{7. Hyperparameter Optimization}
 
 Instead of manually selecting the network hyperparameters, an automated search was performed using \textbf{RandomizedSearchCV} together with the SciKeras wrapper, which allows a Keras model to be used as a Scikit-learn compatible estimator. Randomized Search was preferred over an exhaustive Grid Search because the combined search space is extremely large, and Randomized Search allows a representative sample of configurations to be evaluated within a practical time budget while still providing a reliable estimate of the best-performing region of the hyperparameter space.
@@ -461,7 +564,7 @@ Random State & 42\\
 \end{center}
 
 \vspace{0.3cm}
-
+\newpage
 Upon completion of the search, the following hyperparameter combination was identified as the best-performing configuration based on the mean cross-validation accuracy.
 
 \begin{center}
@@ -495,8 +598,10 @@ Optimization Time & 5480.85 seconds ($\approx$91.35 minutes)\\
 \vspace{0.3cm}
 
 These best-identified hyperparameters were subsequently used to construct the optimized MLP, consisting of three hidden Dense layers of 128 neurons each with Tanh activation, a Dropout layer with a rate of 0.2 following every hidden layer, and an output Dense layer of 10 neurons with Softmax activation, compiled using the RMSprop optimizer with a learning rate of 0.001.
-
 \section*{8. Experimental Results}
+
+
+
 
 \subsection*{8.1 Dataset Exploration}
 
@@ -526,6 +631,7 @@ Flattened Feature Length & 784\\
 
 The dataset was found to be complete, correctly labeled and free of missing values. Every class was represented by exactly 6{,}000 training samples, confirming a perfectly balanced dataset that requires no additional class-balancing technique before training.
 
+
 \subsection*{8.2 Data Preprocessing Results}
 
 After flattening, every image was transformed from a $28\times28$ matrix into a 784-dimensional feature vector. Pixel intensities, originally in the range $[0,255]$, were normalized to the range $[0,1]$, and the integer class labels were converted into one-hot encoded vectors of length 10.
@@ -549,6 +655,7 @@ One-hot Encoded Testing Labels & (10000, 10)\\
 \vspace{0.15cm}
 
 This preprocessing step ensured that every image was represented in a format compatible with the Dense (fully connected) layers of the MLP, and that the pixel scale did not disproportionately influence the gradient updates during training.
+
 
 \subsection*{8.3 Baseline Model}
 
@@ -615,6 +722,7 @@ F1-Score (weighted) & 88.02\%\\
 \vspace{0.15cm}
 
 The per-class classification report revealed that Trouser (99\% precision, 97\% recall), Sandal (99\% precision, 93\% recall) and Bag (97\% precision, 97\% recall) were classified with very high accuracy, since these categories possess visually distinctive shapes. In contrast, the Shirt class obtained the lowest performance (76\% precision, 64\% recall), and was frequently confused with visually similar upper-body garments such as T-shirt/Top, Pullover and Coat, which is an expected and well-documented characteristic of the Fashion-MNIST dataset.
+
 
 \subsection*{8.4 Optimized Model}
 
@@ -690,6 +798,7 @@ F1-Score (weighted) & 88.10\%\\
 
 The per-class classification report of the optimized model showed a similar overall pattern to the baseline model, with Trouser (99\% precision, 96\% recall) and Bag (97\% precision, 97\% recall) remaining the best-classified categories. Notably, the Shirt class, which was the weakest class for the baseline model, improved slightly in recall (from 64\% to 71\%) with the optimized model, although its precision decreased marginally (from 76\% to 69\%), suggesting a shift in the decision boundary rather than a uniform improvement across all metrics for that class.
 
+
 \subsection*{8.5 Baseline vs Optimized: Performance Comparison}
 
 \begin{center}
@@ -714,6 +823,93 @@ Training Time & 97.32 s & 157.47 s\\
 
 The comparison shows that the optimized model achieved a testing accuracy and precision that were marginally lower than the baseline model, while its F1-Score was marginally higher. In practical terms, the two models performed almost identically on the held-out testing set, with differences well under half a percentage point across all four metrics. This result is discussed further in Section 11.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\newpage
+
+\subsection*{8.6 Weight Update Log (Epochs 1--3)}
+
+The perceptron was trained on the XOR gate with a learning rate of 0.1 and zero initial weights and bias. The complete weight update log for the first three epochs is shown below.
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\textbf{Update} & \textbf{Epoch} & \textbf{Input} & \textbf{Target} & \textbf{Pred} & \textbf{Weights} & \textbf{Bias}\\
+\hline
+1 & 1 & (0,0) & 0 & 1 & [0.0, 0.0] & -0.1000\\
+\hline
+2 & 1 & (0,1) & 1 & 0 & [0.0, 0.1] & 0.0000\\
+\hline
+3 & 1 & (1,1) & 0 & 1 & [-0.1, 0.0] & -0.1000\\
+\hline
+4 & 2 & (0,1) & 1 & 0 & [-0.1, 0.1] & 0.0000\\
+\hline
+5 & 2 & (1,0) & 1 & 0 & [0.0, 0.1] & 0.1000\\
+\hline
+6 & 2 & (1,1) & 0 & 1 & [-0.1, 0.0] & 0.0000\\
+\hline
+7 & 3 & (0,0) & 0 & 1 & [-0.1, 0.0] & -0.1000\\
+\hline
+8 & 3 & (0,1) & 1 & 0 & [-0.1, 0.1] & 0.0000\\
+\hline
+9 & 3 & (1,0) & 1 & 0 & [0.0, 0.1] & 0.1000\\
+\hline
+10 & 3 & (1,1) & 0 & 1 & [-0.1, 0.0] & 0.0000\\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.15cm}
+
+Epoch 1 and Epoch 2 each finished with 3 misclassifications, while Epoch 3 was the first epoch to finish with 4 misclassifications -- the point at which, as shown in the next subsection, the perceptron locks into a permanent repeating cycle.
+
+
+\subsection*{8.7 Repeating Cycle (Epochs 4--10)}
+
+Every epoch from Epoch 3 onward produced \textit{exactly} 4 misclassifications, updating the weights and bias through the identical sequence of states shown in Update 7 through Update 10 above. This exact 4-update sequence was found, unchanged, in every subsequent epoch through Epoch 10 (Updates 11--38), for a total of $3+4\times9=39$ recorded update events across 10 epochs. Training was halted after the maximum of 10 epochs without reaching a zero-error epoch.
+
+\begin{center}
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+\textbf{Property} & \textbf{Value}\\
+\hline
+Total Weight Updates (10 epochs) & 38\\
+\hline
+Misclassifications per Epoch (Epochs 3--10) & 4 (constant)\\
+\hline
+Zero-Error Epoch Reached & No\\
+\hline
+Final Recorded Weights (Update 38) & [-0.1, 0.1]\\
+\hline
+Final Recorded Bias (Update 38) & 0.0000\\
+\hline
+\end{tabular}
+\end{center}
+
+\newpage
+\subsection*{8.8 Non-Convergence Pattern Analysis}
+
+The automated cycle-detection routine applied to the recorded weight/bias history reported the following.
+
+\begin{center}
+\begin{tabular}{|p{10cm}|}
+\hline
+\textbf{Cycle Detection Output}\\
+\hline
+Weight/Bias state $(-0.1,\ 0.0,\ -0.1)$ first seen at Update 3 reappears at Update 7.\\
+\hline
+This confirms the weights and bias enter a repeating cycle instead of converging.\\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.15cm}
+
+This result identifies the precise pattern that prevents convergence: starting from Update 3, the perceptron's parameters $(\mathbf{w},b)$ cycle through the same 4 states, indefinitely, once every epoch. The root cause is that the XOR positive class $\{(0,1),(1,0)\}$ and negative class $\{(0,0),(1,1)\}$ lie on opposite diagonals of the unit square, so no single straight line can place all positive points on one side and all negative points on the other. Every time the perceptron adjusts its boundary to correctly classify one diagonal pair, it simultaneously misclassifies the other diagonal pair, so the weight updates perpetually correct one error at the cost of introducing another, producing the observed cycle rather than convergence.
 \section*{9. Performance Summary}
 
 \begin{center}
@@ -750,9 +946,36 @@ Optimized Testing Accuracy & 88.05\%\\
 \end{tabular}
 \end{center}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\begin{center}
+\begin{tabular}{|p{7cm}|p{5cm}|}
+\hline
+Learning Rate & 0.1\\
+\hline
+Weight/Bias Initialization & Zero\\
+\hline
+Maximum Epochs & 10\\
+\hline
+Total Weight Updates & 38\\
+\hline
+Converged & No\\
+\hline
+Misclassifications per Epoch (Steady State) & 4 of 4 samples\\
+\hline
+Cycle Length & 4 updates (1 epoch)\\
+\hline
+Cycle First Detected & State at Update 3 recurs at Update 7\\
+\hline
+\end{tabular}
+\end{center}
 \section*{10. Generated Plots with Interpretation}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \subsection*{10.1 Sample Images}
 
@@ -768,6 +991,7 @@ The sample images illustrate the visual diversity of the ten clothing categories
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 \subsection*{10.2 Class Distribution}
 
 \begin{figure}[H]
@@ -781,6 +1005,7 @@ The bar chart confirms that each of the ten classes contains exactly 6{,}000 tra
 \vspace{0.15cm}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \subsection*{10.3 Baseline Confusion Matrix}
 
@@ -796,6 +1021,7 @@ The confusion matrix of the baseline model shows that the majority of prediction
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 \subsection*{10.4 Baseline Training Accuracy vs Epoch}
 
 \begin{figure}[H]
@@ -809,6 +1035,7 @@ The training accuracy of the baseline model increases consistently across all 20
 \vspace{0.15cm}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \subsection*{10.5 Baseline Validation Accuracy vs Epoch}
 
@@ -824,6 +1051,7 @@ The validation accuracy rises sharply during the first few epochs and then plate
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 \subsection*{10.6 Baseline Training Loss vs Epoch}
 
 \begin{figure}[H]
@@ -837,6 +1065,7 @@ The training loss decreases smoothly and consistently throughout all 20 epochs, 
 \vspace{0.15cm}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \subsection*{10.7 Baseline Validation Loss vs Epoch}
 
@@ -852,6 +1081,7 @@ Unlike the training loss, the validation loss decreases only for the first few e
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 \subsection*{10.8 Optimized Model Accuracy}
 
 \begin{figure}[H]
@@ -865,6 +1095,7 @@ The training and validation accuracy curves of the optimized model remain much c
 \vspace{0.15cm}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \subsection*{10.9 Optimized Model Loss}
 
@@ -881,7 +1112,6 @@ The training and validation loss curves of the optimized model decrease together
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
 \subsection*{10.10 Optimized Model Confusion Matrix}
 
 \begin{figure}[H]
@@ -892,22 +1122,34 @@ The training and validation loss curves of the optimized model decrease together
 
 The confusion matrix of the optimized model shows a diagonal pattern very similar to that of the baseline model, with the vast majority of testing samples correctly classified. The Shirt class continues to be the most frequently confused category, being misclassified primarily as T-shirt/Top, Pullover and Coat, indicating that this difficulty stems from the inherent visual ambiguity of the dataset rather than from a deficiency specific to either model architecture.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\subsection*{10.11 Combined Decision Boundary Visualization}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{gate.png}
+\caption{Decision Boundary After Every Weight Update for the XOR Gate (Non-Convergent)}
+\end{figure}
+
+The combined figure displays all 38 decision-boundary snapshots recorded across the 10 training epochs. Unlike the OR, AND and NOT gates, no consistent, stable boundary ever emerges: the plotted line is repeatedly seen alternating between only three distinct positions -- a diagonal line running through the $(0,0)$--$(1,1)$ corners, a vertical line at $x_1=0$, and blank/undefined states where the boundary momentarily disappears when $w_2\approx0$. Rather than progressively converging towards a single fixed boundary as seen for OR and AND, the plots after Update 7 begin repeating the exact same three or four boundary positions over and over, visually confirming that the perceptron has entered a permanent oscillation instead of settling on a solution.
 \section*{11. Discussion}
 
 The Multi-Layer Perceptron demonstrated that a fully connected feedforward network trained on flattened, normalized pixel vectors can classify Fashion-MNIST images effectively, with both the baseline and optimized models reaching a testing accuracy of approximately 88\%. Randomized Search was preferred over an exhaustive Grid Search because the defined search space, spanning eight hyperparameters, would have been computationally prohibitive to evaluate exhaustively; sampling 15 configurations under 5-fold cross-validation instead located a strong region of the space at a fraction of the cost. The search selected 3 hidden layers of 128 neurons, Tanh activation, a Dropout rate of 0.2 and the RMSprop optimizer (learning rate 0.001) as the best configuration, with the number of hidden layers, the activation function and the dropout rate appearing to influence cross-validation accuracy the most.
 
-Notably, the optimized model's testing accuracy (88.05\%) was marginally lower than the baseline's (88.09\%), despite the optimized configuration achieving a higher cross-validation accuracy (88.74\%). This is not a failure of the search: cross-validation accuracy is estimated on resampled training folds and need not transfer exactly to a single fixed test split, the added Dropout trades a little raw fitting capacity for stability, and a difference under half a percentage point lies well within normal run-to-run variation of stochastic training. The real benefit of the optimized model is visible in its accuracy and loss curves, where the training and validation curves track much closer together than in the baseline, indicating reduced overfitting and more reliable generalization behaviour.
+Notably, the optimized model's testing accuracy (88.05\%) was marginally lower than the baseline's (88.09\%), despite the optimized configuration achieving a higher cross-validation accuracy (88.74\%). This is not a failure of the search: cross-validation accuracy is estimated on resampled training folds and need not transfer exactly to a single fixed test split, the added Dropout trades a little raw fitting capacity for stability, and a difference under half a percentage point lies well within normal run-to-run variation of stochastic training. The real benefit of the optimized model is visible in its accuracy and loss curves, where the training and validation curves track much closer together than in the baseline, indicating reduced overfitting and more reliable generalization behaviour. Both models found the Shirt class hardest to classify, confusing it mainly with T-shirt/Top, Pullover and Coat, reflecting genuine visual overlap between these garments at $28\times28$ resolution rather than an architectural weakness, and would likely require a spatially-aware model such as a CNN to resolve.
 
-Both models found the Shirt class hardest to classify, confusing it mainly with T-shirt/Top, Pullover and Coat. This reflects genuine visual overlap between these garments at $28\times28$ resolution rather than an architectural weakness, and would likely require a spatially-aware model such as a CNN to resolve.
-
+The XOR gate experiment, carried out with a Single Layer Perceptron rather than an MLP, provides a complementary and instructive contrast to these results. The experiment confirmed that the Single Layer Perceptron cannot learn the XOR function: training never reached a zero-error epoch even after 10 full epochs (38 individual weight updates); instead, from the third epoch onward, every epoch produced exactly the same 4 misclassifications, and an automated cycle-detection check confirmed that the recorded weight/bias state at Update 3 reappeared identically at Update 7, proving that the parameters had entered a permanent repeating cycle. This behaviour is the direct consequence of XOR being non-linearly separable: its positive and negative classes occupy opposite diagonal corners of the input square, so no single straight-line boundary -- the only kind of boundary a Single Layer Perceptron can represent -- can ever separate them correctly, so every corrective update fixes one pair of points while simultaneously breaking the other pair, producing oscillation rather than convergence. This result is the classical illustration first highlighted by Minsky and Papert, and it directly motivates the use of Multi-Layer Perceptrons such as the one used for Fashion-MNIST classification in this report, since hidden layers and non-linear activation functions are precisely what is required to construct the piecewise, non-linear decision boundary that problems like XOR demand.
 \section*{12. Conclusion}
 
-A Multi-Layer Perceptron was implemented in TensorFlow/Keras for multi-class classification on the Fashion-MNIST dataset. After flattening, normalizing and one-hot encoding the images, a baseline MLP (two hidden Dense layers) trained for 20 epochs achieved a testing accuracy of 88.09\%, precision of 88.20\%, recall of 88.09\% and F1-Score of 88.02\%.
+A Multi-Layer Perceptron was implemented in TensorFlow/Keras for multi-class classification on the Fashion-MNIST dataset, and a Single Layer Perceptron was separately implemented from scratch and applied to the XOR gate to examine the limits of linear classifiers. After flattening, normalizing and one-hot encoding the images, a baseline MLP (two hidden Dense layers) trained for 20 epochs achieved a testing accuracy of 88.09\%, precision of 88.20\%, recall of 88.09\% and F1-Score of 88.02\%. RandomizedSearchCV with 5-fold cross-validation was then used to tune the hidden layers, neurons, learning rate, batch size, epochs, optimizer, activation function and dropout rate, identifying a deeper, Dropout-regularized, Tanh-based RMSprop configuration with a cross-validation accuracy of 88.74\%; retrained with these settings, the optimized model achieved a testing accuracy of 88.05\%, precision of 88.18\%, recall of 88.05\% and F1-Score of 88.10\% -- essentially on par with the baseline, but with a visibly narrower training-validation gap, reflecting improved regularization.
 
-RandomizedSearchCV with 5-fold cross-validation was then used to tune the hidden layers, neurons, learning rate, batch size, epochs, optimizer, activation function and dropout rate, identifying a deeper, Dropout-regularized, Tanh-based RMSprop configuration with a cross-validation accuracy of 88.74\%. Retrained with these settings, the optimized model achieved a testing accuracy of 88.05\%, precision of 88.18\%, recall of 88.05\% and F1-Score of 88.10\% -- essentially on par with the baseline, but with a visibly narrower training-validation gap, reflecting improved regularization.
+In parallel, the Perceptron Learning Algorithm was applied to the XOR gate, with the weights and bias logged after every individual update over 10 training epochs. Unlike linearly separable problems, the perceptron never converged on XOR: it produced 4 misclassifications in every epoch from the third epoch onward, and an automated check confirmed that its weight/bias state entered an exact repeating cycle, while the combined decision-boundary visualization showed the boundary line oscillating between the same few positions instead of settling on a stable solution.
 
-The experiment shows that automated hyperparameter optimization does not always yield a strictly higher test accuracy than a well-designed baseline, but remains valuable for improving training stability and generalization. It also reinforced practical understanding of MLP design, activation functions, image preprocessing, backpropagation-based training and systematic model comparison using standard classification metrics.
-
+Together, these results show that automated hyperparameter optimization does not always yield a strictly higher test accuracy than a well-designed baseline, but remains valuable for improving training stability and generalization, while the XOR experiment concretely demonstrates the fundamental limitation of the Single Layer Perceptron -- its inability to solve non-linearly separable problems -- and motivates the need for Multi-Layer Perceptrons with hidden layers and non-linear activation functions, of exactly the kind implemented and evaluated on Fashion-MNIST in this report. The experiment as a whole reinforced practical understanding of MLP design, activation functions, image preprocessing, backpropagation-based training and systematic model comparison using standard classification metrics.
 \section*{13. References}
 
 \begin{enumerate}
@@ -946,6 +1188,16 @@ Pearson Education,
 \item SciKeras Documentation.
 
 \url{https://www.adriangb.com/scikeras/}
+
+\item Frank Rosenblatt,
+\textit{The Perceptron: A Probabilistic Model for Information Storage and Organization in the Brain},
+Psychological Review,
+1958.
+
+\item Marvin Minsky, Seymour Papert,
+\textit{Perceptrons: An Introduction to Computational Geometry},
+MIT Press,
+1969.
 
 \end{enumerate}
 

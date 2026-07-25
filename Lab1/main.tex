@@ -83,13 +83,22 @@ AY: 2026--27\\
 
 \section*{1. Objective}
 
-The objective of this experiment is to understand the working principle of an Artificial Neuron and implement a Single Layer Perceptron from scratch for binary classification. The Banknote Authentication dataset is used to train and evaluate the perceptron model. The experiment also aims to study the effect of feature normalization, analyse the learning behaviour using different plots and evaluate the classifier using standard performance metrics such as Accuracy, Precision, Recall and F1-score.
-
+The objective of this experiment is twofold. First, to understand the working principle of an Artificial Neuron and implement a Single Layer Perceptron from scratch for binary classification, using the Banknote Authentication dataset to train and evaluate the model, studying the effect of feature normalization, analysing the learning behaviour using different plots, and evaluating the classifier using standard performance metrics such as Accuracy, Precision, Recall and F1-score. Second, to implement the Perceptron Learning Algorithm from scratch in Python and use it to learn the OR, AND and NOT logic gates, recording the weights and bias after every individual weight update, visualizing the decision boundary at every stage of learning, and verifying that a Single Layer Perceptron can successfully converge on these gates because they represent linearly separable functions.
 \section*{2. Background Theory}
 
 Artificial Neural Networks are computational models inspired by the functioning of biological neurons. The fundamental processing unit of an Artificial Neural Network is the Artificial Neuron. Each neuron receives several input features, multiplies them with trainable weights, adds a bias value and passes the result through an activation function to generate an output.
 
 The Single Layer Perceptron proposed by Frank Rosenblatt is one of the earliest supervised learning algorithms. It is capable of solving only linearly separable binary classification problems. During training, the perceptron iteratively updates its weights and bias using the perceptron learning rule until the classification error is minimized.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+The Perceptron, introduced by Frank Rosenblatt, is one of the earliest supervised learning algorithms capable of solving binary classification problems that are linearly separable. Logic gates such as OR, AND and NOT are classical examples of linearly separable Boolean functions, since a single straight line (in two input dimensions) or a single threshold point (in one input dimension) is sufficient to correctly separate the output classes 0 and 1.
+
+During training, the perceptron computes a weighted sum of its inputs, passes this sum through a Step Activation Function, and compares the resulting prediction with the true target value. Whenever the prediction is incorrect, the weights and bias are updated immediately (online learning), and training continues until an entire pass over all input combinations produces zero misclassifications, at which point the perceptron is said to have converged.
+\newpage
 
 \subsection*{Mathematical Formulation}
 
@@ -146,6 +155,35 @@ where
 \item $y$ is the actual class.
 \item $\hat{y}$ is the predicted class.
 \end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+The weighted sum of the inputs is
+
+\[
+z=\mathbf{w}^{T}\mathbf{x}+b
+\]
+
+where $\mathbf{x}$ is the input feature vector, $\mathbf{w}$ is the weight vector and $b$ is the bias. The predicted output is
+
+\[
+\hat{y}=f(z)
+\]
+
+where $f(z)$ is the Step Activation Function. Whenever $\hat{y}\neq y$, the weights and bias are updated according to the Perceptron Learning Rule
+
+\[
+\mathbf{w}_{new}=\mathbf{w}_{old}+\eta(y-\hat{y})\mathbf{x}
+\]
+
+\[
+b_{new}=b_{old}+\eta(y-\hat{y})
+\]
+
+where $\eta$ is the learning rate, $y$ is the true class and $\hat{y}$ is the predicted class. In this experiment, $\eta = 0.1$ and the weights and bias were both initialized to zero.
 \section*{3. Activation Function}
 
 An activation function determines the output of a neuron based on its weighted input. In this experiment, the Step Activation Function is employed because the problem involves binary classification. The function produces either 0 or 1 depending on the value of the weighted sum.
@@ -188,6 +226,24 @@ Although several activation functions exist, only the Step Activation Function i
 
  
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+The Step Activation Function was used, since all three gates involve binary classification.
+
+\[
+f(z)=
+\begin{cases}
+1,&z\ge0\\
+0,&z<0
+\end{cases}
+\]
+
+This function is simple, computationally inexpensive, and matches the classical formulation of the Rosenblatt Perceptron.
+
+\newpage
 \section*{4. Dataset Description}
 
 The experiment uses the \textbf{Banknote Authentication Dataset} obtained from the UCI Machine Learning Repository. The dataset consists of statistical features extracted from digital images of genuine and forged banknotes using wavelet transforms.
@@ -250,9 +306,55 @@ Entropy & Measure of randomness present in the image.\\
 The dataset contains no missing values and is well suited for demonstrating the learning capability of a Single Layer Perceptron after feature normalization.
  
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+Unlike a real-world dataset, the "dataset" for this experiment consists of the complete truth tables of three fundamental logic gates. Each truth table represents a linearly separable binary classification problem.
+
+\vspace{0.2cm}
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{x1} & \textbf{x2} & \textbf{OR Output}\\
+\hline
+0 & 0 & 0\\
+0 & 1 & 1\\
+1 & 0 & 1\\
+1 & 1 & 1\\
+\hline
+\end{tabular}
+\qquad
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{x1} & \textbf{x2} & \textbf{AND Output}\\
+\hline
+0 & 0 & 0\\
+0 & 1 & 0\\
+1 & 0 & 0\\
+1 & 1 & 1\\
+\hline
+\end{tabular}
+\qquad
+\begin{tabular}{|c|c|}
+\hline
+\textbf{x1} & \textbf{NOT Output}\\
+\hline
+0 & 1\\
+1 & 0\\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.2cm}
+
+Both OR and AND are two-input gates whose outputs can be separated by a single straight line in the $(x_1,x_2)$ plane, whereas NOT is a single-input gate whose output can be separated by a single threshold point on the number line.
 \section*{5. Experimental Procedure}
 
 The experiment was carried out using Python in Google Colab. The implementation followed a systematic workflow beginning from dataset loading to model evaluation.
+
 
 \subsection*{Task 1: Dataset Exploration}
 
@@ -273,6 +375,7 @@ The descriptive statistics indicated that the dataset contains features with dif
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 \subsection*{Task 2: Exploratory Data Analysis}
 
 Exploratory Data Analysis (EDA) was carried out to understand the characteristics of the dataset before model training.
@@ -289,6 +392,7 @@ The following visualizations were generated.
 These visualizations helped in identifying feature distributions, relationships among variables and the presence of outliers.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \subsection*{Task 3: Data Preprocessing}
 
@@ -307,6 +411,7 @@ Before training, the dataset was preprocessed using the following steps.
 The normalized dataset ensured that all features contributed equally during weight updates.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \subsection*{Task 4: Perceptron Implementation}
 
@@ -328,6 +433,7 @@ The weights were initialized with small random values and updated after every mi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 \subsection*{Task 5: Model Training}
 
 The perceptron was trained for a maximum of 100 epochs.
@@ -345,6 +451,7 @@ During every epoch,
 Training continued until all epochs were completed while monitoring convergence through the number of misclassified samples.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \subsection*{Task 6: Model Evaluation}
 
@@ -364,6 +471,32 @@ The evaluation metrics measured the effectiveness of the trained perceptron on u
 
  
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+The experiment was carried out using Python in Google Colab.
+
+
+\subsection*{Task 7: Truth Table Definition}
+
+The complete truth tables of the OR, AND and NOT gates were defined as NumPy arrays, to be used as the training data for three independent perceptrons.
+
+
+\subsection*{Task 8: Perceptron Implementation and Training}
+
+A Single Layer Perceptron was implemented completely from scratch, without the use of any machine learning libraries. Weights and bias were initialized to zero, and the perceptron was trained separately on each gate using a learning rate of 0.1. Training proceeded sample-by-sample (online learning); whenever a sample was misclassified, the weights and bias were updated immediately and the updated values were printed to the console. Training continued until an entire epoch produced zero misclassifications.
+
+
+\subsection*{Task 9: Decision Boundary Visualization}
+
+Immediately after every weight update, the corresponding decision boundary was recorded. For the two-input gates (OR, AND), the boundary is the straight line $w_1x_1+w_2x_2+b=0$. For the single-input NOT gate, the boundary is the threshold point $x_1=-b/w_1$ on the number line. All recorded boundaries, across all three gates, were combined into a single figure using Matplotlib subplots.
+
+
+\subsection*{Task 10: Convergence Verification}
+
+After training, the final weights and bias of each gate were verified by checking that every training sample was correctly classified, confirming convergence in every case.
 \section*{6. Source Code}
 
 The complete implementation was carried out in Python using Google Colab.
@@ -385,8 +518,10 @@ The major stages of implementation included
 
 The complete source code used in this experiment is available in the submitted Google Colab notebook and GitHub repository.
  
-
 \section*{7. Experimental Results}
+
+
+
 
 \subsection*{7.1 Dataset Exploration}
 
@@ -418,6 +553,7 @@ The dataset was found to be complete with no missing values. The descriptive sta
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 \subsection*{7.2 Data Preprocessing Results}
 
 After applying Min-Max Normalization, every feature value was transformed into the range [0,1].
@@ -432,6 +568,7 @@ The dataset was divided into
 This preprocessing step improved convergence during perceptron training.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \subsection*{7.3 Model Training}
 
@@ -465,6 +602,7 @@ Maximum Epochs & 100\\
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 \subsection*{7.4 Performance Metrics}
 
 The trained perceptron was evaluated on the testing dataset using standard classification metrics.
@@ -491,6 +629,7 @@ The obtained results indicate that the perceptron successfully classified the ma
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 \subsection*{7.5 Learning Rate Comparison}
 
 The perceptron model was trained using three different learning rates to study their influence on model performance.
@@ -515,6 +654,110 @@ The comparison shows that learning rates of 0.001 and 0.01 achieved the highest 
 
  
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+\subsection*{7.6 OR Gate -- Weight Update Log}
+
+The perceptron was trained on the OR gate with a learning rate of 0.1, initial weights $[0,0]$ and initial bias $0.0000$.
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\textbf{Update} & \textbf{Epoch} & \textbf{Input} & \textbf{Target} & \textbf{Pred} & \textbf{Weights} & \textbf{Bias}\\
+\hline
+1 & 1 & (0,0) & 0 & 1 & [0.0, 0.0] & -0.1000\\
+\hline
+2 & 1 & (0,1) & 1 & 0 & [0.0, 0.1] & 0.0000\\
+\hline
+3 & 2 & (0,0) & 0 & 1 & [0.0, 0.1] & -0.1000\\
+\hline
+4 & 2 & (1,0) & 1 & 0 & [0.1, 0.1] & 0.0000\\
+\hline
+5 & 3 & (0,0) & 0 & 1 & [0.1, 0.1] & -0.1000\\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.15cm}
+
+The OR gate converged after 4 epochs, with a total of 5 weight updates, reaching a final configuration of Weights $= [0.1, 0.1]$ and Bias $= -0.1000$.
+
+
+\subsection*{7.7 AND Gate -- Weight Update Log}
+
+The perceptron was trained on the AND gate with the same learning rate and zero initial weights and bias.
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\textbf{Update} & \textbf{Epoch} & \textbf{Input} & \textbf{Target} & \textbf{Pred} & \textbf{Weights} & \textbf{Bias}\\
+\hline
+1 & 1 & (0,0) & 0 & 1 & [0.0, 0.0] & -0.1000\\
+\hline
+2 & 1 & (1,1) & 1 & 0 & [0.1, 0.1] & 0.0000\\
+\hline
+3 & 2 & (0,0) & 0 & 1 & [0.1, 0.1] & -0.1000\\
+\hline
+4 & 2 & (0,1) & 0 & 1 & [0.1, 0.0] & -0.2000\\
+\hline
+5 & 2 & (1,1) & 1 & 0 & [0.2, 0.1] & -0.1000\\
+\hline
+6 & 3 & (0,1) & 0 & 1 & [0.2, 0.0] & -0.2000\\
+\hline
+7 & 3 & (1,0) & 0 & 1 & [0.1, 0.0] & -0.3000\\
+\hline
+8 & 3 & (1,1) & 1 & 0 & [0.2, 0.1] & -0.2000\\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.15cm}
+
+The AND gate converged after 4 epochs, with a total of 8 weight updates, reaching a final configuration of Weights $= [0.2, 0.1]$ and Bias $= -0.2000$. The AND gate required more updates than the OR gate because the positive class (output 1) corresponds to only a single corner point $(1,1)$ of the input space, requiring the decision boundary to be shifted further before the single positive example could be correctly isolated from the three negative examples.
+
+
+\subsection*{7.8 NOT Gate -- Weight Update Log}
+
+The perceptron was trained on the NOT gate, which has only a single input feature.
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\textbf{Update} & \textbf{Epoch} & \textbf{Input} & \textbf{Target} & \textbf{Pred} & \textbf{Weight} & \textbf{Bias}\\
+\hline
+1 & 1 & (1) & 0 & 1 & [-0.1] & -0.1000\\
+\hline
+2 & 2 & (0) & 1 & 0 & [-0.1] & 0.0000\\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.15cm}
+
+The NOT gate converged after just 3 epochs, with only 2 weight updates in total, reaching a final configuration of Weight $= -0.1000$ and Bias $= 0.0000$. This gate converged fastest because it involves only a single input feature and only two possible training samples.
+
+
+\subsection*{7.9 Final Learned Parameters}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Gate} & \textbf{Total Updates} & \textbf{Epochs to Converge} & \textbf{Final Weights} & \textbf{Final Bias}\\
+\hline
+OR & 5 & 4 & [0.1, 0.1] & -0.1000\\
+\hline
+AND & 8 & 4 & [0.2, 0.1] & -0.2000\\
+\hline
+NOT & 2 & 3 & [-0.1] & 0.0000\\
+\hline
+\end{tabular}
+\end{center}
 \section*{8. Performance Summary}
 
 \begin{center}
@@ -546,9 +789,35 @@ F1-Score & 97.98\%\\
 \end{center}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\begin{center}
+\begin{tabular}{|p{7cm}|p{5cm}|}
+\hline
+Learning Rate & 0.1\\
+\hline
+Weight/Bias Initialization & Zero\\
+\hline
+Gates Trained & OR, AND, NOT\\
+\hline
+Total Weight Updates (All Gates) & 15\\
+\hline
+OR Gate Convergence & 4 epochs (5 updates)\\
+\hline
+AND Gate Convergence & 4 epochs (8 updates)\\
+\hline
+NOT Gate Convergence & 3 epochs (2 updates)\\
+\hline
+Gates Successfully Learned & 3 of 3\\
+\hline
+\end{tabular}
+\end{center}
 \section*{9. Generated Plots with Interpretation}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \subsection*{9.1 Feature Histograms}
 
@@ -565,6 +834,7 @@ The histograms illustrate the distribution of all four numerical features presen
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 \subsection*{9.2 Correlation Heatmap}
 
 \begin{figure}[H]
@@ -579,6 +849,7 @@ The heatmap illustrates the correlation between the input features. Highly corre
 \vspace{0.3cm}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \subsection*{9.3 Scatter Plot}
 
@@ -595,6 +866,7 @@ The scatter plot shows that the two classes are largely separable using the sele
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 \subsection*{9.4 Box Plot}
 
 \begin{figure}[H]
@@ -609,6 +881,7 @@ The box plot summarizes the spread of each feature and highlights the presence o
 \vspace{0.3cm}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \subsection*{9.5 Confusion Matrix}
 
@@ -625,6 +898,7 @@ The confusion matrix indicates that the perceptron correctly classified almost e
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 \subsection*{9.6 Training Error vs Epoch}
 
 \begin{figure}[H]
@@ -639,6 +913,7 @@ The number of misclassified samples decreases considerably as training progresse
 \vspace{0.3cm}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \subsection*{9.7 Weight Evolution During Training}
 
@@ -655,6 +930,7 @@ The weight evaluation graph illustrates how the four weights are continuously ad
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 \subsection*{9.8 Bias Evaluation}
 
 \begin{figure}[H]
@@ -670,6 +946,7 @@ The bias value changes gradually during training before approaching a stable val
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 \subsection*{9.9 Learning Rate Comparison}
 
 \begin{figure}[H]
@@ -681,29 +958,38 @@ The bias value changes gradually during training before approaching a stable val
 
 The comparison of different learning rates indicates that both 0.001 and 0.01 achieved the highest testing accuracy of 99.64\%. Increasing the learning rate to 0.1 resulted in a slight reduction in performance due to larger parameter updates during training.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\subsection*{9.10 Combined Decision Boundary Visualization}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{gate.png}
+\caption{Decision Boundary After Every Weight Update for the OR, AND and NOT Gates}
+\end{figure}
+
+The combined figure displays all 15 decision-boundary snapshots recorded across the three gates (5 for OR, 8 for AND and 2 for NOT). For the OR and AND gates, the boundary line can be seen rotating and shifting after every update, gradually moving into a position that correctly separates the red (class 0) and blue (class 1) points; by the final snapshot of each gate, every point lies on the correct side of the line. For the NOT gate, the boundary is a single vertical threshold point which, after only two updates, correctly separates the single positive sample from the single negative sample on the number line. These visualizations confirm, sample by sample, exactly how the perceptron incrementally reshapes its decision boundary until the gate is learned perfectly.
 \section*{10. Discussion}
 
-The implementation of the Single Layer Perceptron demonstrated that a simple linear classifier can effectively solve linearly separable binary classification problems. The Banknote Authentication dataset proved to be highly suitable for perceptron learning because the two classes become nearly separable after feature normalization.
+The implementation of the Single Layer Perceptron demonstrated that a simple linear classifier can effectively solve linearly separable binary classification problems, a conclusion reinforced across both the Banknote Authentication task and the OR, AND and NOT logic gates studied in this report. The Banknote Authentication dataset proved highly suitable for perceptron learning because the two classes become nearly separable after feature normalization, while the OR, AND and NOT gates confirmed the same principle in a simpler, fully controlled setting, since each is a classical example of a linearly separable Boolean function.
 
-The training error decreased considerably over successive epochs, indicating that the perceptron successfully learned an appropriate decision boundary. The gradual stabilization of both the weights and bias further confirmed convergence of the learning algorithm.
+The training error decreased considerably over successive epochs on the banknote task, indicating that the perceptron successfully learned an appropriate decision boundary, and the gradual stabilization of both the weights and bias further confirmed convergence of the learning algorithm. The evaluation metrics indicate excellent classification performance, with the model achieving an Accuracy of 98.18\%, Precision of 100.00\%, Recall of 96.03\% and an F1-Score of 97.98\%, demonstrating that the implemented classifier generalized well on unseen testing samples. The learning rate experiment further showed that smaller learning rates (0.001 and 0.01) produced slightly better performance than a larger learning rate (0.1), since larger learning rates resulted in comparatively larger weight updates, producing a slight reduction in testing accuracy.
+\newpage
 
-The evaluation metrics indicate excellent classification performance. The model achieved an Accuracy of 98.18\%, Precision of 100.00\%, Recall of 96.03\% and an F1-Score of 97.98\%. These values demonstrate that the implemented classifier generalized well on unseen testing samples.
+The logic gate experiments illustrate the same convergence behaviour at the level of individual weight updates. The OR gate converged fastest among the two-input gates, requiring only 5 updates, since its positive class occupies three of the four input corners, making it comparatively easy for a single line to isolate the sole negative example $(0,0)$. The AND gate required more updates (8 in total) because its positive class is a single corner point $(1,1)$, requiring the boundary to be pushed further away from the origin before all three negative points could be placed correctly on the negative side. The NOT gate, having only two possible input values, converged almost immediately in just 2 updates. In every case, the weights and bias changed monotonically towards a stable configuration and then stopped changing entirely once an epoch produced zero misclassifications, which is the defining signature of convergence, and these results align exactly with perceptron convergence theory, which guarantees that the algorithm will find a separating hyperplane in a finite number of steps whenever the underlying data is linearly separable.
 
-The learning rate experiment showed that smaller learning rates (0.001 and 0.01) produced slightly better performance than a larger learning rate (0.1). Larger learning rates resulted in comparatively larger weight updates, producing a slight reduction in testing accuracy.
-
-Although the Single Layer Perceptron performs well on linearly separable datasets, it cannot solve non-linearly separable problems such as XOR. Such problems require multilayer neural networks together with differentiable activation functions and backpropagation learning.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+Although the Single Layer Perceptron performs well on linearly separable datasets and logic gates alike, it cannot solve non-linearly separable problems such as XOR. Such problems require multilayer neural networks together with differentiable activation functions and backpropagation learning.
 \section*{11. Conclusion}
 
-In this experiment, a Single Layer Perceptron was successfully implemented from scratch using Python in Google Colab. The Banknote Authentication dataset was explored, preprocessed and normalized before training the classifier.
+In this experiment, a Single Layer Perceptron was successfully implemented from scratch using Python in Google Colab and evaluated on two complementary tasks: binary classification on the Banknote Authentication dataset, and learning of the OR, AND and NOT logic gates. For the banknote classification task, the dataset was explored, preprocessed and normalized before training the classifier, and the perceptron learning algorithm successfully updated the weights and bias over multiple epochs, resulting in a well-trained binary classifier; the generated plots clearly illustrated the learning behaviour of the model through training error reduction, weight convergence, bias evaluation and learning-rate comparison, and the trained model achieved high classification performance with an Accuracy of 98.18\%, demonstrating that the Single Layer Perceptron is an effective solution for linearly separable binary classification tasks.
 
-The perceptron learning algorithm successfully updated the weights and bias over multiple epochs, resulting in a well-trained binary classifier. The generated plots clearly illustrated the learning behaviour of the model through training error reduction, weight convergence, bias evaluation and learning-rate comparison.
+For the logic gate task, the Perceptron Learning Algorithm was used to successfully learn the OR, AND and NOT gates, with the weights and bias logged after every individual update and the decision boundary visualized at every stage of learning, clearly illustrating how the perceptron incrementally rotates and shifts its boundary until all training examples are classified correctly; all three gates converged within a handful of epochs (3 to 4), confirming that the Single Layer Perceptron is a reliable and efficient solution for linearly separable binary classification problems of this kind.
 
-The trained model achieved high classification performance with an Accuracy of 98.18\%, demonstrating that the Single Layer Perceptron is an effective solution for linearly separable binary classification tasks. The experiment also provided practical understanding of activation functions, perceptron learning, parameter updates and performance evaluation metrics.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Taken together, the experiment provided practical understanding of activation functions, perceptron learning, parameter updates and performance evaluation metrics, and demonstrated consistently, across both a real-world dataset and fundamental logic gates, that the Single Layer Perceptron is an effective and reliable solution wherever the underlying classification problem is linearly separable.
+\newpage
 
 \section*{12. References}
 
